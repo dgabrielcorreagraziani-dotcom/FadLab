@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FadLab">
+  <meta name="theme-color" content="#071726">
+  <title>FadLab</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Gestao da equipe</p>
+      <h1>FadLab</h1>
+    </div>
+    <div id="sessionBadge" class="session-badge" aria-live="polite"></div>
+  </header>
+
+  <main class="layout">
+    <div id="login" class="screen active">
+      <section class="auth-shell glass">
+        <div class="auth-copy">
+          <p class="eyebrow">Acesso seguro</p>
+          <h2>Entre com sua conta ou crie um novo perfil</h2>
+          <p class="auth-text">
+            Cada usuario comeca com uma senha temporaria padrao e precisa
+            trocala no primeiro login antes de entrar no painel.
+          </p>
+
+          <div class="note-card">
+            <span class="note-title">Senha inicial de todos os usuarios</span>
+            <strong>FadLab@123</strong>
+            <span>Usuario inicial: admin. A troca e obrigatoria no primeiro acesso.</span>
+          </div>
+        </div>
+
+        <div class="auth-panel">
+          <div class="mode-switch">
+            <button id="loginModeBtn" type="button" class="mode-btn active">Entrar</button>
+            <button id="registerModeBtn" type="button" class="mode-btn">Criar conta</button>
+          </div>
+
+          <form id="loginForm" class="auth-form active">
+            <label class="field">
+              <span>Usuario</span>
+              <input id="loginUser" name="loginUser" autocomplete="username" placeholder="Seu usuario">
+            </label>
+
+            <label class="field">
+              <span>Senha</span>
+              <input
+                id="loginPass"
+                name="loginPass"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Sua senha"
+              >
+            </label>
+
+            <button type="submit">Entrar no painel</button>
+          </form>
+
+          <form id="registerForm" class="auth-form">
+            <label class="field">
+              <span>Nome</span>
+              <input id="registerName" name="registerName" autocomplete="name" placeholder="Como voce quer aparecer">
+            </label>
+
+            <label class="field">
+              <span>Usuario</span>
+              <input id="registerUser" name="registerUser" autocomplete="username" placeholder="Escolha um usuario unico">
+            </label>
+
+            <p class="form-note">
+              Toda conta nova nasce como <strong>Usuario</strong> com a senha temporaria
+              <strong>FadLab@123</strong>. A funcao so pode ser alterada por um admin.
+            </p>
+
+            <button type="submit">Criar conta</button>
+          </form>
+
+          <p id="authMessage" class="message" aria-live="polite"></p>
+        </div>
+      </section>
+    </div>
+
+    <div id="passwordSetup" class="screen">
+      <section class="auth-shell glass">
+        <div class="auth-copy">
+          <p class="eyebrow">Primeiro acesso</p>
+          <h2>Defina uma nova senha antes de continuar</h2>
+          <p class="auth-text">
+            O sistema reconheceu que esta conta ainda usa a senha temporaria
+            padrao. Para proteger o acesso, a troca precisa acontecer agora.
+          </p>
+
+          <div class="note-card">
+            <span class="note-title">Senha temporaria atual</span>
+            <strong>FadLab@123</strong>
+            <span>Depois da troca, essa senha deixa de funcionar para este usuario.</span>
+          </div>
+        </div>
+
+        <div class="auth-panel">
+          <p id="firstAccessUser" class="first-access-user"></p>
+
+          <form id="firstAccessForm" class="auth-form active">
+            <label class="field">
+              <span>Nova senha</span>
+              <input
+                id="firstAccessPass"
+                name="firstAccessPass"
+                type="password"
+                autocomplete="new-password"
+                minlength="6"
+                placeholder="Minimo de 6 caracteres"
+              > 
+            </label>
+
+            <label class="field">
+              <span>Confirmar nova senha</span>
+              <input
+                id="firstAccessPassConfirm"
+                name="firstAccessPassConfirm"
+                type="password"
+                autocomplete="new-password"
+                minlength="6"
+                placeholder="Repita a nova senha"
+              >
+            </label>
+
+            <button type="submit">Salvar nova senha</button>
+          </form>
+
+          <p id="firstAccessMessage" class="message" aria-live="polite"></p>
+          <button id="firstAccessLogoutBtn" type="button" class="secondary">Sair</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="app" class="screen">
+      <nav class="glass tab-bar" aria-label="Navegacao principal">
+        <button type="button" data-tab="calendar" class="active">Calendario</button>
+        <button type="button" data-tab="members">Membros</button>
+        <button type="button" data-tab="scale">Escala</button>
+        <button type="button" data-tab="songs">Musicas</button>
+        <button type="button" data-tab="messages">Mensagens</button>
+        <button type="button" data-tab="alerts">Avisos</button>
+        <button type="button" data-tab="profile">Perfil</button>
+      </nav>
+
+      <section id="calendar" class="glass tab active">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Resumo</p>
+            <h3>Calendario</h3>
+          </div>
+          <p id="sessionWelcome" class="section-note"></p>
+        </div>
+
+        <!-- Calendario visual -->
+        <div class="cal-wrap">
+          <div class="cal-header">
+            <button type="button" id="calPrevBtn" class="cal-nav-btn" aria-label="Mes anterior">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </button>
+            <h4 id="calMonthLabel" class="cal-month-label"></h4>
+            <button type="button" id="calNextBtn" class="cal-nav-btn" aria-label="Proximo mes">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            </button>
+          </div>
+
+          <div class="cal-grid-head">
+            <span>Dom</span><span>Seg</span><span>Ter</span>
+            <span>Qua</span><span>Qui</span><span>Sex</span><span>Sab</span>
+          </div>
+
+          <div id="calGrid" class="cal-grid"></div>
+        </div>
+
+        <!-- Eventos do dia selecionado -->
+        <div id="calDayDetail" class="cal-day-detail" style="display:none">
+          <p class="eyebrow" id="calDayLabel"></p>
+          <ul id="calDayEvents" class="cal-day-events"></ul>
+        </div>
+      </section>
+
+      <section id="members" class="glass tab">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Equipe</p>
+            <h3>Membros</h3>
+          </div>
+          <p id="membersAdminNote" class="section-note">
+            Todos os perfis cadastrados neste navegador aparecem aqui.
+          </p>
+        </div>
+
+        <ul id="membersList" class="stack-list"></ul>
+        <p id="membersMessage" class="message" aria-live="polite"></p>
+      </section>
+
+      <section id="scale" class="glass tab">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Escala</p>
+            <h3>Calendario de Cultos</h3>
+          </div>
+          <p id="scaleRoleNote" class="section-note"></p>
+        </div>
+
+        <!-- Controles admin para adicionar culto -->
+        <div id="scaleAdminPanel" style="display:none">
+          <div class="scale-add-form glass-inner">
+            <p class="eyebrow" style="margin-bottom:12px">Novo Culto</p>
+            <div class="scale-form-grid">
+              <label class="field">
+                <span>Data do culto</span>
+                <input type="date" id="scaleDate">
+              </label>
+              <label class="field">
+                <span>Descricao (opcional)</span>
+                <input type="text" id="scaleDesc" placeholder="Ex: Culto de Domingo">
+              </label>
+            </div>
+            <div class="scale-member-select">
+              <p class="field-label-small">Membros escalados</p>
+              <div id="scaleMemberCheckboxes" class="scale-checkboxes"></div>
+            </div>
+            <button type="button" id="scaleAddBtn" class="scale-add-submit">Adicionar culto</button>
+            <p id="scaleAddMessage" class="message"></p>
+          </div>
+        </div>
+
+        <!-- Calendario de cultos -->
+        <div id="scaleCalendar" class="scale-calendar"></div>
+      </section>
+
+      <section id="songs" class="glass tab">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Repertorio</p>
+            <h3>Musicas do mes</h3>
+          </div>
+          <p id="songPermission" class="section-note"></p>
+        </div>
+
+        <form id="songForm" class="inline-form">
+          <input id="songInput" placeholder="Nova musica">
+          <button type="submit">Adicionar</button>
+        </form>
+
+        <p id="songsMessage" class="message" aria-live="polite"></p>
+        <ul id="songList" class="stack-list"></ul>
+      </section>
+
+      <section id="messages" class="tab chat-screen">
+        <div class="chat-shell">
+          <aside class="chat-sidebar">
+            <header class="chat-sidebar-header">
+              <h3>Mensagens</h3>
+              <div class="chat-search-wrap">
+                <svg class="chat-search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M13 13l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <input id="chatSearch" name="chatSearch" type="search" placeholder="Buscar">
+              </div>
+            </header>
+            <div id="chatContactList" class="chat-contact-list"></div>
+          </aside>
+
+          <section class="chat-panel">
+            <header class="chat-panel-header">
+              <div class="chat-avatar" id="chatAvatar"></div>
+              <div class="chat-panel-info">
+                <strong id="chatRecipientName">Selecione uma conversa</strong>
+                <span id="chatRecipientMeta" class="chat-panel-meta">Escolha um contato ao lado</span>
+              </div>
+            </header>
+            <div id="chatThread" class="chat-thread"></div>
+            <form id="messageForm" class="chat-compose-bar">
+              <textarea id="messageText" name="messageText" rows="1" placeholder="Mensagem"></textarea>
+              <button type="submit" class="chat-send-btn" aria-label="Enviar">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </form>
+          </section>
+        </div>
+        <p id="messageFormMessage" class="message" aria-live="polite" style="display:none"></p>
+      </section>
+
+      <section id="alerts" class="glass tab">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Comunicados</p>
+            <h3>Avisos</h3>
+          </div>
+          <p id="notificationPermission" class="section-note"></p>
+        </div>
+
+        <div id="notificationComposerCard" class="compose-shell">
+          <form id="notificationForm" class="compose-form">
+            <div class="compose-grid">
+              <label class="field">
+                <span>Destino</span>
+                <select id="notificationRecipient" name="notificationRecipient"></select>
+              </label>
+
+              <label class="field">
+                <span>Titulo</span>
+                <input id="notificationTitle" name="notificationTitle" placeholder="Resumo do aviso">
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Mensagem do aviso</span>
+              <textarea
+                id="notificationText"
+                name="notificationText"
+                rows="4"
+                placeholder="Escreva o aviso para o usuario ou para todos"
+              ></textarea>
+            </label>
+
+            <button type="submit">Enviar aviso</button>
+          </form>
+        </div>
+
+        <p id="notificationComposerMessage" class="message" aria-live="polite"></p>
+        <ul id="notificationList" class="stack-list"></ul>
+      </section>
+
+      <section id="profile" class="glass tab">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Conta</p>
+            <h3>Perfil</h3>
+          </div>
+          <p class="section-note">O tema salvo aqui vale apenas para este usuario.</p>
+        </div>
+
+        <div id="profileInfo" class="info-grid"></div>
+
+        <form id="themeForm" class="theme-form">
+          <div class="theme-grid">
+            <label class="field">
+              <span>Preset base</span>
+              <select id="themePreset" name="themePreset"></select>
+            </label>
+
+            <label class="field">
+              <span>Cor de destaque</span>
+              <input id="themeAccent" name="themeAccent" type="color">
+            </label>
+
+            <label class="field">
+              <span>Fundo principal</span>
+              <input id="themeBgStart" name="themeBgStart" type="color">
+            </label>
+
+            <label class="field">
+              <span>Fundo secundario</span>
+              <input id="themeBgEnd" name="themeBgEnd" type="color">
+            </label>
+
+            <label class="field">
+              <span>Superficie</span>
+              <input id="themeSurface" name="themeSurface" type="color">
+            </label>
+          </div>
+
+          <div class="action-row">
+            <button type="submit">Salvar tema</button>
+            <button id="resetTheme" type="button" class="secondary">Reaplicar preset</button>
+          </div>
+        </form>
+
+        <p id="themeMessage" class="message" aria-live="polite"></p>
+        <button id="logoutBtn" type="button" class="secondary logout-btn">Sair</button>
+      </section>
+    </div>
+  </main>
+
+  <!-- Lyrics Modal -->
+  <div id="lyricsModalOverlay" class="lyrics-overlay"></div>
+  <div id="lyricsModal" class="lyrics-modal glass">
+    <div class="lyrics-modal-header">
+      <h3 id="lyricsModalTitle"></h3>
+      <button type="button" id="lyricsModalClose" class="lyrics-close-btn" aria-label="Fechar">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="lyricsModalSongId">
+    <textarea id="lyricsTextarea" class="lyrics-textarea" placeholder="Escreva a letra da musica aqui..." rows="16" style="display:none"></textarea>
+    <pre id="lyricsReadonly" class="lyrics-readonly" style="display:none"></pre>
+    <div class="lyrics-modal-footer">
+      <button type="button" id="lyricsSaveBtn" style="display:none; width:auto; min-width:140px;">Salvar letra</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
